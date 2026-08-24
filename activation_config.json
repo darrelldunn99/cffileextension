@@ -1,0 +1,12 @@
+{
+  "endpoints": [
+    {
+      "file_path": "/var/log/myapp.log",
+      "count_lines": true
+    },
+    {
+      "file_path": "/data/exports/report.csv",
+      "count_lines": false
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "version": 15,
+  "dashboardMetadata": {
+    "name": "File Monitor Overview",
+    "shared": false,
+    "owner": "",
+    "tags": ["custom", "file-monitor"],
+    "popularity": 0
+  },
+  "tiles": [
+    {
+      "name": "File Existence",
+      "tileType": "DATA_EXPLORER",
+      "configured": true,
+      "bounds": { "top": 0, "left": 0, "width": 456, "height": 304 },
+      "queries": [
+        {
+          "id": "A",
+          "metric": "custom.file.exists",
+          "spaceAggregation": "AVG",
+          "timeAggregation": "DEFAULT",
+          "splitBy": ["file_path"],
+          "enabled": true
+        }
+      ],
+      "visualConfig": {
+        "type": "GRAPH_CHART",
+        "thresholds": [
+          {
+            "axisTarget": "LEFT",
+            "rules": [
+              { "color": "#7dc540" },
+              { "value": 0, "color": "#f5d30f" },
+              { "value": 0, "color": "#e8004b" }
+            ],
+            "queryId": "A",
+            "visible": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "File Size (bytes)",
+      "tileType": "DATA_EXPLORER",
+      "configured": true,
+      "bounds": { "top": 0, "left": 456, "width": 456, "height": 304 },
+      "queries": [
+        {
+          "id": "A",
+          "metric": "custom.file.size_bytes",
+          "spaceAggregation": "AVG",
+          "timeAggregation": "DEFAULT",
+          "splitBy": ["file_path"],
+          "enabled": true
+        }
+      ],
+      "visualConfig": { "type": "GRAPH_CHART" }
+    },
+    {
+      "name": "File Age (seconds)",
+      "tileType": "DATA_EXPLORER",
+      "configured": true,
+      "bounds": { "top": 304, "left": 0, "width": 456, "height": 304 },
+      "queries": [
+        {
+          "id": "A",
+          "metric": "custom.file.age_seconds",
+          "spaceAggregation": "AVG",
+          "timeAggregation": "DEFAULT",
+          "splitBy": ["file_path"],
+          "enabled": true
+        }
+      ],
+      "visualConfig": { "type": "GRAPH_CHART" }
+    },
+    {
+      "name": "Line Count",
+      "tileType": "DATA_EXPLORER",
+      "configured": true,
+      "bounds": { "top": 304, "left": 456, "width": 456, "height": 304 },
+      "queries": [
+        {
+          "id": "A",
+          "metric": "custom.file.line_count",
+          "spaceAggregation": "AVG",
+          "timeAggregation": "DEFAULT",
+          "splitBy": ["file_path"],
+          "enabled": true
+        }
+      ],
+      "visualConfig": { "type": "GRAPH_CHART" }
+    }
+  ]
+}

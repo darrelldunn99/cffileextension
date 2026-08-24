@@ -1,0 +1,117 @@
+name: custom:file-monitor
+version: "1.0.0"
+minDynatraceVersion: "1.239"
+author:
+  name: "Your Company Name"
+
+python:
+  runtime: "python3"
+  modules:
+    - name: file_monitor
+      entrypoint: file_monitor.__main__:main
+
+metrics:
+  - key: custom.file.exists
+    metadata:
+      displayName: File Exists
+      unit: Count
+      description: "1 if the file exists, 0 if not found"
+  - key: custom.file.size_bytes
+    metadata:
+      displayName: File Size
+      unit: Byte
+      description: Current size of the monitored file in bytes
+  - key: custom.file.age_seconds
+    metadata:
+      displayName: File Age
+      unit: Second
+      description: Seconds since the file was last modified
+  - key: custom.file.line_count
+    metadata:
+      displayName: File Line Count
+      unit: Count
+      description: Number of lines (text files only, requires count_lines=true)
+
+topology:
+  types:
+    - name: custom:file-monitor
+      displayName: File Monitor
+      enabled: true
+      rules:
+        - idPattern: "file-{file_path}"
+          instanceNamePattern: "{file_path}"
+          sources:
+            - sourceType: Metrics
+              condition: "$prefix(custom.file)"
+          attributes:
+            - pattern: "{file_path}"
+              key: file_path
+              displayName: File Path
+
+screens:
+  - entityType: custom:file-monitor
+    listSettings:
+      staticContent:
+        header:
+          title: File Monitors
+    detailsSettings:
+      staticContent:
+        showProblems: true
+        showProperties: true
+        showTags: true
+    propertiesCard:
+      properties:
+        - type: ATTRIBUTE
+          attribute:
+            key: file_path
+            displayName: File Path
+    chartsCards:
+      - key: file-size-card
+        displayName: File Size & Age
+        charts:
+          - displayName: File Size (bytes)
+            metrics:
+              - metricSelector: "custom.file.size_bytes:splitBy(\"file_path\")"
+          - displayName: File Age (seconds)
+            metrics:
+              - metricSelector: "custom.file.age_seconds:splitBy(\"file_path\")"
+      - key: file-health-card
+        displayName: File Health
+        charts:
+          - displayName: File Exists
+            metrics:
+              - metricSelector: "custom.file.exists:splitBy(\"file_path\")"
+          - displayName: Line Count
+            metrics:
+              - metricSelector: "custom.file.line_count:splitBy(\"file_path\")"
+
+dashboards:
+  - path: "dashboards/overview.json"
+
+activationSchema:
+  types:
+    endpoint:
+      displayName: File to Monitor
+      properties:
+        file_path:
+          displayName: File Path
+          description: Absolute path to the file to monitor (e.g. /var/log/app.log)
+          type: text
+          nullable: false
+          default: ""
+        count_lines:
+          displayName: Count Lines
+          description: Count lines on each poll — disable for large binary files
+          type: boolean
+          nullable: false
+          default: false
+  properties:
+    endpoints:
+      displayName: Files
+      description: One entry per file you want to monitor
+      type:
+        $ref: "#/types/endpoint"
+      nullable: false
+      items:
+        constraints: []
+      default: []
