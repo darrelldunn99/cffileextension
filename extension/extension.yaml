@@ -1,5 +1,5 @@
 name: custom:file-monitor
-version: "1.0.0"
+version: "1.1.0"
 minDynatraceVersion: "1.239"
 author:
   name: "Your Company Name"
@@ -31,6 +31,20 @@ metrics:
       displayName: File Line Count
       unit: Count
       description: Number of lines (text files only, requires count_lines=true)
+  - key: custom.file.change_age_seconds
+    metadata:
+      displayName: File Metadata Change Age
+      unit: Second
+      description: >
+        Seconds since the file's metadata last changed (ctime).
+        On Unix this reflects permission/owner/link changes; on Windows it is the creation time.
+  - key: custom.file.mode
+    metadata:
+      displayName: File Mode
+      unit: Count
+      description: >
+        Numeric permission bits of the file (e.g. 420 = 0o644 = rw-r--r--).
+        Alert on unexpected changes to detect permission drift.
 
 topology:
   types:
@@ -47,6 +61,18 @@ topology:
             - pattern: "{file_path}"
               key: file_path
               displayName: File Path
+            - pattern: "{file_owner}"
+              key: file_owner
+              displayName: File Owner
+            - pattern: "{file_group}"
+              key: file_group
+              displayName: File Group
+            - pattern: "{file_mountpoint}"
+              key: file_mountpoint
+              displayName: Mount Point
+            - pattern: "{file_mode_octal}"
+              key: file_mode_octal
+              displayName: File Mode (octal)
 
 screens:
   - entityType: custom:file-monitor
@@ -65,6 +91,22 @@ screens:
           attribute:
             key: file_path
             displayName: File Path
+        - type: ATTRIBUTE
+          attribute:
+            key: file_owner
+            displayName: Owner
+        - type: ATTRIBUTE
+          attribute:
+            key: file_group
+            displayName: Group
+        - type: ATTRIBUTE
+          attribute:
+            key: file_mountpoint
+            displayName: Mount Point
+        - type: ATTRIBUTE
+          attribute:
+            key: file_mode_octal
+            displayName: Mode (octal)
     chartsCards:
       - key: file-size-card
         displayName: File Size & Age
@@ -84,6 +126,15 @@ screens:
           - displayName: Line Count
             metrics:
               - metricSelector: "custom.file.line_count:splitBy(\"file_path\")"
+      - key: file-meta-card
+        displayName: File Metadata
+        charts:
+          - displayName: Metadata Change Age (seconds)
+            metrics:
+              - metricSelector: "custom.file.change_age_seconds:splitBy(\"file_path\")"
+          - displayName: File Mode (numeric)
+            metrics:
+              - metricSelector: "custom.file.mode:splitBy(\"file_path\",\"file_mode_octal\")"
 
 dashboards:
   - path: "dashboards/overview.json"
